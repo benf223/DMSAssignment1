@@ -1,2 +1,2 @@
 # DMSAssignment1
-First assignement for Distributed Mobile Systems
+First assignment for Distributed Mobile Systems
