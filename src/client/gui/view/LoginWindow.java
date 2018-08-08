@@ -1,5 +1,6 @@
 package client.gui.view;
 
+import client.gui.controller.ServerConnector;
 import client.gui.util.AppPanel;
 
 import javax.swing.*;
@@ -14,9 +15,9 @@ public class LoginWindow extends AppPanel
 	private JTextField serverAddress = null;
 	private JButton submitButton = null;
 	
-	public LoginWindow()
+	public LoginWindow(ServerConnector serverConnector)
 	{
-		super(new Dimension(500, 300));
+		super(serverConnector, new Dimension(500, 300));
 		this.setLayout(new GridLayout(4, 2, 20, 25));
 		initComponents();
 	}
@@ -39,6 +40,18 @@ public class LoginWindow extends AppPanel
 		
 		this.add(new JLabel());
 		submitButton = new JButton("Login");
+		submitButton.addActionListener((event) -> {
+			this.serverConnector.connectToServer();
+			try
+			{
+				this.serverConnector.get("test");
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		});
+		
 		this.add(submitButton);
 	}
 }
