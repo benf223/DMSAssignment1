@@ -22,7 +22,8 @@ public class LoginWindow extends AppPanel
 		initComponents();
 	}
 	
-	private void initComponents()
+	@Override
+	protected void initComponents()
 	{
 		test = new JLabel("Login");
 		this.add(test);

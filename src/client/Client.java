@@ -21,8 +21,8 @@ public class Client
 	{
 		JFrame mainFrame = new JFrame("Client");
 		mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		AppPanel login = new LoginWindow(ServerConnector.instance());
-//		AppPanel login = new ChatRoomWindow(ServerConnector.instance());
+//		AppPanel login = new LoginWindow(ServerConnector.instance());
+		AppPanel login = new ChatRoomWindow(ServerConnector.instance());
 		mainFrame.setContentPane(login);
 		mainFrame.setMinimumSize(login.minDimension);
 		mainFrame.setVisible(true);

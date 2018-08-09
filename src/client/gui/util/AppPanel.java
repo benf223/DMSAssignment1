@@ -15,4 +15,6 @@ public abstract class AppPanel extends JPanel
 		this.serverConnector = serverConnector;
 		this.minDimension = minDimension;
 	}
+	
+	protected abstract void initComponents();
 }
