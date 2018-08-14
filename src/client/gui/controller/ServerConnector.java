@@ -14,7 +14,6 @@ public class ServerConnector
 	
 	private static ServerConnector instance;
 	
-	
 	public static ServerConnector instance()
 	{
 		if (instance == null)
@@ -58,6 +57,8 @@ public class ServerConnector
 		{
 			e.printStackTrace();
 		}
+		
+		out.println("test user name");
 	}
 	
 	// Sends a Message to the server and processes the response
@@ -83,6 +84,7 @@ public class ServerConnector
 		}
 		
 		out.println(request);
+		
 		// What is this
 		// Need to get a response
 		
@@ -92,5 +94,16 @@ public class ServerConnector
 		}
 		
 		messageList.set(in.nextLine());
+	}
+	
+	public void close()
+	{
+		// Send a disconnect message
+		// Shutdown connections ...
+	}
+	
+	public String[] getUsers()
+	{
+		return new String[0];
 	}
 }

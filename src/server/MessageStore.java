@@ -1,6 +1,11 @@
 package server;
 
+import util.BroadcastMessage;
+import util.Message;
+import util.TargetedMessage;
+
 import java.util.Observable;
+import java.util.Stack;
 
 // This needs to be thread safe
 // Going to use a Stack to represent the message tree
@@ -18,19 +23,28 @@ public class MessageStore extends Observable
 		return instance;
 	}
 	
+	private Stack<Message> messageStack;
+	
 	private MessageStore()
 	{
-	
+		messageStack = new Stack<>();
 	}
 	
-	public synchronized void push(Object message)
+	public synchronized void push(Message message)
 	{
-	
+		this.messageStack.push(message);
+		
+		if (message instanceof BroadcastMessage) {
+			this.notifyObservers();
+		} else if (message instanceof TargetedMessage) {
+			this.notifyObservers(((TargetedMessage) message).getReceiver());
+		}
+		
+		this.notifyObservers();
 	}
 	
-	// Unused
-	public synchronized Object getMessagesForClient()
+	public String getDataForClient()
 	{
-		return null;
+		return "";
 	}
 }

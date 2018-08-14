@@ -8,12 +8,16 @@ import java.awt.*;
 
 public class ChatRoomWindow extends AppPanel
 {
-//	private Timer timer;
 	private JList<String> messageList;
+	private JList<String> usersList;
+	private JTextArea messageArea;
+	private JTextArea targetUser;
+	private JButton submitButton;
 	
 	public ChatRoomWindow(ServerConnector serverConnector)
 	{
 		super(serverConnector, new Dimension(500, 600));
+		this.setLayout(new GridLayout(3, 2, 20, 20));
 		
 		initComponents();
 	}
@@ -29,6 +33,20 @@ public class ChatRoomWindow extends AppPanel
 		
 		messageList = new JList<>(data);
 		this.add(messageList);
+		
+		this.usersList = new JList<>(serverConnector.getUsers());
+		this.add(this.usersList);
+		
+		this.messageArea = new JTextArea("Message");
+		this.add(this.messageArea);
+		
+		this.targetUser = new JTextArea("@All");
+		this.add(this.targetUser);
+		
+		this.add(new JPanel());
+		
+		this.submitButton = new JButton("Send message");
+		this.add(this.submitButton);
 		
 		//		timer = new Timer(250, (event) -> System.out.println("test"));
 		//		timer.start();

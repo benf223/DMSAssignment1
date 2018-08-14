@@ -1,5 +1,8 @@
 package server;
 
+import util.Message;
+import util.TargetedMessage;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -13,6 +16,7 @@ public class ConnectionThread implements Runnable, Observer
 	private Scanner in;
 	private PrintWriter out;
 	private boolean stopRequested;
+	private String name;
 	
 	public ConnectionThread(Socket socket)
 	{
@@ -28,6 +32,10 @@ public class ConnectionThread implements Runnable, Observer
 		{
 			e.printStackTrace();
 		}
+		
+		while (!in.hasNext());
+		
+		this.name = in.nextLine();
 	}
 	
 	@Override
@@ -54,7 +62,6 @@ public class ConnectionThread implements Runnable, Observer
 		}
 	}
 	
-	
 	// Switch for processing different requests;
 	private void processGet(String request) {
 		switch (request){
@@ -73,10 +80,17 @@ public class ConnectionThread implements Runnable, Observer
 		}
 	}
 	
-	
 	@Override
 	public void update(Observable o, Object arg)
 	{
-		// Will push update to clients
+		if (arg != null) {
+			if (arg instanceof TargetedMessage) {
+				if (!this.name.equalsIgnoreCase(((TargetedMessage) arg).getReceiver())) {
+					return;
+				}
+			}
+		}
+		
+		out.println(MessageStore.instance().getDataForClient());
 	}
 }
