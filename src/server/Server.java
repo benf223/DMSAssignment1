@@ -6,6 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
+// Convert to a GUI to better handle hangs
 public class Server
 {
 	public static final int PORT = 46587;
@@ -25,17 +26,9 @@ public class Server
 				while (true)
 				{
 					startNewThread(serverSocket.accept());
-					
-					if (keyboard.hasNext())
-					{
-						if (keyboard.nextLine().equalsIgnoreCase("stop"))
-						{
-							break;
-						}
-					}
 				}
 				
-				serverSocket.close();
+//				serverSocket.close();
 			}
 			else
 			{
