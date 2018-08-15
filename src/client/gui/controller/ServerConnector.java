@@ -24,6 +24,8 @@ public class ServerConnector
 		return instance;
 	}
 	
+	private ServerConnectorThread thread;
+	
 	private Socket socket;
 	private PrintWriter out;
 	private Scanner in;
@@ -31,11 +33,17 @@ public class ServerConnector
 	
 	private ServerConnector()
 	{
+		this.thread = new ServerConnectorThread();
+		new Thread(thread).start();
 		messageList = MessageList.instance();
 	}
 	
 	public void connectToServer()
 	{
+		if (socket != null) {
+			return;
+		}
+		
 		try
 		{
 			socket = new Socket(HOSTNAME, PORT);
@@ -78,6 +86,7 @@ public class ServerConnector
 	// Run on a timer
 	public void get(String request) throws Exception
 	{
+		
 		if (socket == null)
 		{
 			throw new Exception("Server not connected");
@@ -105,5 +114,57 @@ public class ServerConnector
 	public String[] getUsers()
 	{
 		return new String[0];
+	}
+	
+	// This thread should stop the GUI from hanging and process all the requests
+	private class ServerConnectorThread implements Runnable
+	{
+		private ServerConnector connector;
+		
+		public ServerConnectorThread()
+		{
+			connector = ServerConnector.instance();
+		}
+		
+		@Override
+		public void run()
+		{
+			connector.connectToServer();
+			
+			while (true) {
+				connector.push();
+				connector.pull();
+			}
+		}
+		
+		public void postMessage(String message) {
+		
+		}
+		
+		public void readMessages() {
+		
+		}
+		
+		public void readUsers() {
+		
+		}
+		
+		public boolean addUser(String user) {
+			return false;
+		}
+		
+		public void disconnect() {
+		
+		}
+	}
+	
+	private void pull()
+	{
+	
+	}
+	
+	private void push()
+	{
+	
 	}
 }

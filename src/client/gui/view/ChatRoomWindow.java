@@ -16,8 +16,8 @@ public class ChatRoomWindow extends AppPanel
 	
 	public ChatRoomWindow(ServerConnector serverConnector)
 	{
-		super(serverConnector, new Dimension(500, 600));
-		this.setLayout(new GridLayout(3, 2, 20, 20));
+		super(serverConnector, new Dimension(1000, 1200));
+		this.setLayout(new BorderLayout());
 		
 		initComponents();
 	}
@@ -31,24 +31,35 @@ public class ChatRoomWindow extends AppPanel
 		data[2] = "Alvin: Wut";
 		data[3] = "Ben: ...";
 		
-		messageList = new JList<>(data);
-		this.add(messageList);
+		String[] users = new String[4];
+		users[0] = "Kaylan";
+		users[1] = "David";
+		users[2] = "Alvin";
+		users[3] = "Ben";
 		
-		this.usersList = new JList<>(serverConnector.getUsers());
-		this.add(this.usersList);
+		messageList = new JList<>(data);
+		this.add(messageList, BorderLayout.CENTER);
+		//serverConnector.getUsers()
+		this.usersList = new JList<>(users);
+		this.add(this.usersList, BorderLayout.EAST);
+		
+		JPanel tmpPanel = new JPanel(new BorderLayout());
+		tmpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
 		this.messageArea = new JTextArea("Message");
-		this.add(this.messageArea);
+		this.messageArea.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		tmpPanel.add(this.messageArea, BorderLayout.CENTER);
 		
 		this.targetUser = new JTextArea("@All");
-		this.add(this.targetUser);
-		
-		this.add(new JPanel());
+		this.targetUser.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		tmpPanel.add(this.targetUser, BorderLayout.WEST);
 		
 		this.submitButton = new JButton("Send message");
-		this.add(this.submitButton);
+		tmpPanel.add(this.submitButton, BorderLayout.EAST);
 		
-		//		timer = new Timer(250, (event) -> System.out.println("test"));
-		//		timer.start();
+		this.add(tmpPanel, BorderLayout.SOUTH);
+		
+		//timer = new Timer(250, (event) -> System.out.println("test"));
+		//timer.start();
 	}
 }
