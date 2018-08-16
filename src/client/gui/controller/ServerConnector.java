@@ -171,6 +171,10 @@ public class ServerConnector
 			}
 		}
 		
+		public void started() {
+			started = true;
+		}
+		
 		public void postMessage(Message message) throws Exception
 		{
 			Message[] msgs = connector.post(message).getMessages();
@@ -213,8 +217,6 @@ public class ServerConnector
 				return false;
 			}
 			
-			System.out.println("Here");
-			started = true;
 			return true;
 		}
 		

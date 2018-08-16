@@ -23,6 +23,7 @@ public class ChatRoomWindow extends AppPanel
 		super(serverConnector, new Dimension(600, 800));
 		this.setLayout(new BorderLayout());
 		initComponents();
+		serverConnector.thread.started();
 	}
 	
 	@Override
