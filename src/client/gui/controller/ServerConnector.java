@@ -125,6 +125,7 @@ public class ServerConnector
 	{
 		private ServerConnector connector;
 		private boolean started;
+		private boolean active;
 		
 		public ServerConnectorThread()
 		{
@@ -152,7 +153,10 @@ public class ServerConnector
 			{
 				try
 				{
-					connector.pull();
+					if (!active) {
+						connector.pull();
+					}
+					
 				}
 				catch (Exception e)
 				{
@@ -173,6 +177,10 @@ public class ServerConnector
 		
 		public void started() {
 			started = true;
+		}
+		
+		public void toggleActive() {
+			active = !active;
 		}
 		
 		public void postMessage(Message message) throws Exception
