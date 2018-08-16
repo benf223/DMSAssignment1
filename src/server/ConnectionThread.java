@@ -8,9 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Observable;
-import java.util.Observer;
 
-public class ConnectionThread implements Runnable, Observer
+public class ConnectionThread implements Runnable
 {
 	private Socket socket;
 	private ObjectInputStream in;
@@ -49,8 +48,6 @@ public class ConnectionThread implements Runnable, Observer
 			}
 			
 		}
-		
-		MessageStore.instance().deleteObserver(this);
 		
 		try
 		{
@@ -141,30 +138,6 @@ public class ConnectionThread implements Runnable, Observer
 			{
 				out.writeObject(MessageStore.instance().getDataForClient(name));
 			}
-		}
-	}
-	
-	@Override
-	public void update(Observable o, Object arg)
-	{
-		if (arg != null)
-		{
-			if (arg instanceof TargetedMessage)
-			{
-				if (!this.name.equalsIgnoreCase(((TargetedMessage) arg).getReceiver()))
-				{
-					return;
-				}
-			}
-		}
-		
-		try
-		{
-			out.writeObject(MessageStore.instance().getDataForClient(this.name));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
 		}
 	}
 }

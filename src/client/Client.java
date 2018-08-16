@@ -73,4 +73,9 @@ public class Client
 		
 		System.exit(0);
 	}
+	
+	public static void update()
+	{
+		mainFrame.repaint();
+	}
 }

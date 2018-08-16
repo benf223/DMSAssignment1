@@ -1,5 +1,6 @@
 package client.gui.controller;
 
+import client.Client;
 import client.gui.model.MessageList;
 import client.gui.model.UserList;
 import util.*;
@@ -138,10 +139,13 @@ public class ServerConnector
 			{
 			}
 			
+			System.out.println("Starting up");
+			
 			while (true)
 			{
 				try
 				{
+					System.out.println("Update");
 					connector.pull();
 				}
 				catch (Exception e)
@@ -220,5 +224,7 @@ public class ServerConnector
 		this.messageList.set(msg.getMessages());
 		
 		this.userList.set(getUsers());
+		
+		Client.update();
 	}
 }

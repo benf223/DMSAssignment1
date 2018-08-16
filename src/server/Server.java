@@ -64,7 +64,6 @@ public class Server
 	{
 		ConnectionThread connectionThread = new ConnectionThread(socket);
 		connectionThreads.add(connectionThread);
-		messageStore.addObserver(connectionThread);
 		
 		Thread thread = new Thread(connectionThread);
 		thread.start();

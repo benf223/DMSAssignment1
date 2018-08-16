@@ -6,10 +6,9 @@ import util.ResultMessage;
 import util.TargetedMessage;
 
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.Stack;
 
-public class MessageStore extends Observable
+public class MessageStore
 {
 	private static MessageStore instance;
 	
@@ -34,17 +33,6 @@ public class MessageStore extends Observable
 	public synchronized void push(Message message)
 	{
 		this.messageStack.push(message);
-		this.setChanged();
-		
-		if (message instanceof BroadcastMessage)
-		{
-			this.notifyObservers();
-		}
-		else if (message instanceof TargetedMessage)
-		{
-			this.notifyObservers(((TargetedMessage) message).getReceiver());
-		}
-		
 	}
 	
 	public ResultMessage getDataForClient(String user)
