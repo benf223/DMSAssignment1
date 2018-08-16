@@ -104,6 +104,16 @@ public class ChatRoomWindow extends AppPanel
 		}
 		
 		messageList.setListData(MessageList.instance().getMessages());
+		
+		try
+		{
+			Thread.sleep(100);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		
 		this.serverConnector.thread.toggleActive();
 	}
 }
