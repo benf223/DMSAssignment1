@@ -49,6 +49,12 @@ public class LoginWindow extends AppPanel
 		this.add(submitButton);
 	}
 	
+	@Override
+	public void updateElements()
+	{
+	
+	}
+	
 	private void loginButton()
 	{
 		this.serverConnector.connectToServer(serverAddress.getText());

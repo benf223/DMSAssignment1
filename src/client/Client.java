@@ -24,16 +24,17 @@ public class Client
 	}
 	
 	private static JFrame mainFrame;
+	private static AppPanel currentPanel;
 	
 	// Entry point for the client
 	public static void main(String[] args)
 	{
 		mainFrame = new JFrame("Client");
 		mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		AppPanel login = new LoginWindow(ServerConnector.instance());
+		currentPanel = new LoginWindow(ServerConnector.instance());
 		//		AppPanel login = new ChatRoomWindow(ServerConnector.instance());
-		mainFrame.setContentPane(login);
-		mainFrame.setMinimumSize(login.minDimension);
+		mainFrame.setContentPane(currentPanel);
+		mainFrame.setMinimumSize(currentPanel.minDimension);
 		mainFrame.setVisible(true);
 		mainFrame.addWindowListener(new WindowAdapter()
 		{
@@ -53,9 +54,10 @@ public class Client
 	
 	public static void changeView(AppPanel panel)
 	{
+		currentPanel = panel;
 		mainFrame.setVisible(false);
-		mainFrame.setContentPane(panel);
-		mainFrame.setMinimumSize(panel.minDimension);
+		mainFrame.setContentPane(currentPanel);
+		mainFrame.setMinimumSize(currentPanel.minDimension);
 		mainFrame.setVisible(true);
 	}
 	
@@ -76,6 +78,7 @@ public class Client
 	
 	public static void update()
 	{
+		currentPanel.updateElements();
 		mainFrame.repaint();
 	}
 }

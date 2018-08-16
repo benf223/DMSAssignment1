@@ -82,6 +82,13 @@ public class ChatRoomWindow extends AppPanel
 		this.add(tmpPanel, BorderLayout.SOUTH);
 	}
 	
+	@Override
+	public void updateElements()
+	{
+		this.messageList.setListData(MessageList.instance().getMessages());
+		this.usersList.setListData(UserList.instance().getUsers());
+	}
+	
 	private void sendMessage() throws Exception
 	{
 		this.serverConnector.thread.toggleActive();

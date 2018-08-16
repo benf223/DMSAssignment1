@@ -17,4 +17,6 @@ public abstract class AppPanel extends JPanel
 	}
 	
 	protected abstract void initComponents();
+	
+	public abstract void updateElements();
 }
