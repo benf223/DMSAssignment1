@@ -95,7 +95,7 @@ public class ChatRoomWindow extends AppPanel
 		
 		try
 		{
-			Thread.sleep(50);
+			Thread.sleep(250);
 		}
 		catch (InterruptedException e)
 		{
@@ -114,6 +114,15 @@ public class ChatRoomWindow extends AppPanel
 		}
 		
 		messageList.setListData(MessageList.instance().getMessages());
+		
+		try
+		{
+			Thread.sleep(250);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 		
 		this.serverConnector.thread.toggleActive();
 	}
