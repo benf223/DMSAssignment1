@@ -93,6 +93,15 @@ public class ChatRoomWindow extends AppPanel
 	{
 		this.serverConnector.thread.toggleActive();
 		
+		try
+		{
+			Thread.sleep(50);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		
 		String target = this.targetUser.getText();
 		
 		if (UserList.instance().contains(target))
