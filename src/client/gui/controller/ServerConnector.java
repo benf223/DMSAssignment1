@@ -1,11 +1,13 @@
 package client.gui.controller;
 
 import client.gui.model.MessageList;
+import client.gui.model.UserList;
+import util.*;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ServerConnector
 {
@@ -24,147 +26,234 @@ public class ServerConnector
 		return instance;
 	}
 	
-	private ServerConnectorThread thread;
+	public final ServerConnectorThread thread;
 	
 	private Socket socket;
-	private PrintWriter out;
-	private Scanner in;
+	private ObjectOutputStream out;
+	private ObjectInputStream in;
 	private MessageList messageList;
+	private UserList userList;
+	private String user;
 	
 	private ServerConnector()
 	{
-		this.thread = new ServerConnectorThread();
-		new Thread(thread).start();
 		messageList = MessageList.instance();
+		userList = UserList.instance();
+		this.thread = new ServerConnectorThread();
 	}
 	
-	public void connectToServer()
+	public void connectToServer(String url)
 	{
-		if (socket != null) {
+		if (socket != null)
+		{
 			return;
 		}
 		
 		try
 		{
-			socket = new Socket(HOSTNAME, PORT);
+			socket = new Socket(url == null ? HOSTNAME : url, PORT);
 		}
 		catch (IOException e)
 		{
 			System.err.println("Client could not make connection: ");
-			e.printStackTrace();
 			
 			System.exit(-1);
 		}
 		
 		try
 		{
-			out = new PrintWriter(socket.getOutputStream(), true);
-			in = new Scanner(socket.getInputStream());
+			out = new ObjectOutputStream(socket.getOutputStream());
+			in = new ObjectInputStream(socket.getInputStream());
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 		
-		out.println("test user name");
+		new Thread(thread).start();
 	}
 	
-	// Sends a Message to the server and processes the response
-	public Object post(String request) throws Exception
+	private ResultMessage post(Message request) throws Exception
 	{
 		if (socket == null)
 		{
 			throw new Exception("Server not connected");
 		}
 		
-		out.println(request);
-		// What is this
-		return in.nextLine();
+		out.writeObject(request);
+		
+		return (ResultMessage) in.readObject();
 	}
 	
-	// Returns the object containing all messages from the server
-	// Run on a timer
-	public void get(String request) throws Exception
+	private ResultMessage get(RequestMessage request) throws Exception
 	{
-		
 		if (socket == null)
 		{
 			throw new Exception("Server not connected");
 		}
 		
-		out.println(request);
+		out.writeObject(request);
 		
-		// What is this
-		// Need to get a response
-		
-		while (!in.hasNext())
+		ResultMessage msg = (ResultMessage) in.readObject();
+		return msg;
+	}
+	
+	private void close()
+	{
+		if (socket != null) {
+			try
+			{
+				post(new DisconnectMessage(user));
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private String[] getUsers()
+	{
+		try
 		{
-			Thread.sleep(200);
+			ResultMessage msg = this.get(new RequestMessage(user, "GetUsers"));
+			
+			ArrayList<String> tmp = new ArrayList<>(Arrays.asList(msg.getUsers()));
+			
+			return tmp.toArray(new String[0]);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 		
-		messageList.set(in.nextLine());
+		return null;
 	}
 	
-	public void close()
+	public String getUser()
 	{
-		// Send a disconnect message
-		// Shutdown connections ...
+		return this.user;
 	}
 	
-	public String[] getUsers()
-	{
-		return new String[0];
-	}
-	
-	// This thread should stop the GUI from hanging and process all the requests
-	private class ServerConnectorThread implements Runnable
+	public class ServerConnectorThread implements Runnable
 	{
 		private ServerConnector connector;
+		private boolean started;
 		
 		public ServerConnectorThread()
 		{
-			connector = ServerConnector.instance();
+			started = false;
 		}
 		
 		@Override
 		public void run()
 		{
-			connector.connectToServer();
+			connector = ServerConnector.instance();
+			while (!started)
+			{
+			}
 			
-			while (true) {
-				connector.push();
-				connector.pull();
+			while (true)
+			{
+				try
+				{
+					connector.pull();
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+					System.exit(-1);
+				}
+				
+				try
+				{
+					Thread.sleep(250);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
 		
-		public void postMessage(String message) {
-		
+		public void postMessage(Message message)
+		{
+			try
+			{
+				Message[] msgs = connector.post(message).getMessages();
+				MessageList.instance().set(msgs);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
-		public void readMessages() {
-		
+		public void readUsers()
+		{
+			String[] users = connector.getUsers();
+			
+			connector.userList.set(users);
 		}
 		
-		public void readUsers() {
-		
+		public void readMessages()
+		{
+			try
+			{
+				ResultMessage messages = connector.get(new RequestMessage(user, "GetMessages"));
+				connector.messageList.set(messages.getMessages());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		}
 		
-		public boolean addUser(String user) {
-			return false;
+		public boolean addUser(String user)
+		{
+			connector.user = user;
+			
+			String[] users = connector.getUsers();
+			
+			if (users[0] != null)
+			{
+				if (Arrays.binarySearch(users, user) > 0)
+				{
+					return false;
+				}
+			}
+			
+			AddUserMessage msg = new AddUserMessage(user, "Join");
+			
+			try
+			{
+				ResultMessage result = connector.post(msg);
+				
+				if (result.getMessage().equalsIgnoreCase("Accept"))
+				{
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+			started = true;
+			return true;
 		}
 		
-		public void disconnect() {
-		
+		public void disconnect()
+		{
+			connector.close();
 		}
 	}
 	
-	private void pull()
+	private void pull() throws Exception
 	{
-	
-	}
-	
-	private void push()
-	{
-	
+		ResultMessage msg = this.get(new RequestMessage(user, "GetMessages"));
+		
+		this.messageList.set(msg.getMessages());
+		
+		this.userList.set(getUsers());
 	}
 }

@@ -2,13 +2,13 @@ package server;
 
 import util.BroadcastMessage;
 import util.Message;
+import util.ResultMessage;
 import util.TargetedMessage;
 
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Stack;
 
-// This needs to be thread safe
-// Going to use a Stack to represent the message tree
 public class MessageStore extends Observable
 {
 	private static MessageStore instance;
@@ -28,23 +28,46 @@ public class MessageStore extends Observable
 	private MessageStore()
 	{
 		messageStack = new Stack<>();
+		messageStack.push(new BroadcastMessage("Server", "Welcome to the jungle"));
 	}
 	
 	public synchronized void push(Message message)
 	{
 		this.messageStack.push(message);
+		this.setChanged();
 		
-		if (message instanceof BroadcastMessage) {
+		if (message instanceof BroadcastMessage)
+		{
 			this.notifyObservers();
-		} else if (message instanceof TargetedMessage) {
+		}
+		else if (message instanceof TargetedMessage)
+		{
 			this.notifyObservers(((TargetedMessage) message).getReceiver());
 		}
 		
-		this.notifyObservers();
 	}
 	
-	public String getDataForClient()
+	public ResultMessage getDataForClient(String user)
 	{
-		return "";
+		ArrayList<Message> messages = new ArrayList<>();
+		
+		for (Message a : messageStack)
+		{
+			if (a instanceof BroadcastMessage)
+			{
+				messages.add(a);
+			}
+			else
+			{
+				if (a.getSender().equalsIgnoreCase(user) || ((TargetedMessage) a).getReceiver().equalsIgnoreCase(user))
+				{
+					messages.add(a);
+				}
+			}
+		}
+		ResultMessage result = new ResultMessage("Server", "Messages");
+		result.setMessages(messages.toArray(new Message[0]));
+		
+		return result;
 	}
 }

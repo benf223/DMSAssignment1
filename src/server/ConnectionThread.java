@@ -1,20 +1,20 @@
 package server;
 
-import util.Message;
-import util.TargetedMessage;
+import util.*;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Scanner;
 
 public class ConnectionThread implements Runnable, Observer
 {
 	private Socket socket;
-	private Scanner in;
-	private PrintWriter out;
+	private ObjectInputStream in;
+	private ObjectOutputStream out;
 	private boolean stopRequested;
 	private String name;
 	
@@ -25,32 +25,53 @@ public class ConnectionThread implements Runnable, Observer
 		
 		try
 		{
-			in = new Scanner(this.socket.getInputStream());
-			out = new PrintWriter(this.socket.getOutputStream(), true);
+			in = new ObjectInputStream(this.socket.getInputStream());
+			out = new ObjectOutputStream(this.socket.getOutputStream());
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void run()
+	{
+		while (!stopRequested)
+		{
+			try
+			{
+				processGet((Message) in.readObject());
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			
+		}
+		
+		MessageStore.instance().deleteObserver(this);
+		
+		try
+		{
+			in.close();
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 		
-		while (!in.hasNext());
-		
-		this.name = in.nextLine();
-	}
-	
-	@Override
-	public void run()
-	{
-		while (!stopRequested) {
-			if (in.hasNext()) {
-				processGet(in.nextLine());
-			}
+		try
+		{
+			out.close();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
 		}
 		
-		MessageStore.instance().deleteObserver(this);
-		
-		in.close();
-		out.close();
+		System.out.println("Connection closed with " + socket.getInetAddress());
+		Server.connectionThreads.remove(this);
 		
 		try
 		{
@@ -63,19 +84,45 @@ public class ConnectionThread implements Runnable, Observer
 	}
 	
 	// Switch for processing different requests;
-	private void processGet(String request) {
-		switch (request){
-			case "test": {
-				System.out.println(request);
-				out.println("test res");
-				break;
+	private void processGet(Message request) throws Exception
+	{
+		if (request instanceof AddUserMessage)
+		{
+			try
+			{
+				this.name = request.getSender();
+				out.writeObject(new ResultMessage("Server", "Accept"));
 			}
-			case "stop": {
-				this.stopRequested = true;
-				break;
+			catch (IOException e)
+			{
+				e.printStackTrace();
 			}
-			default: {
-				break;
+		}
+		else if (request instanceof BroadcastMessage || request instanceof TargetedMessage)
+		{
+			MessageStore.instance().push(request);
+			Thread.yield();
+		}
+		else if (request instanceof DisconnectMessage)
+		{
+			stopRequested = true;
+		}
+		else if (request instanceof RequestMessage)
+		{
+			if (request.getMessage().equalsIgnoreCase("GetUsers"))
+			{
+				ResultMessage result = new ResultMessage("Server", "Users");
+				
+				ArrayList<String> users = new ArrayList<>();
+				for (ConnectionThread a : Server.connectionThreads)
+				{
+					users.add(a.name);
+				}
+				
+				result.setUsers(users.toArray(new String[0]));
+				out.writeObject(result);
+			} else if (request.getMessage().equalsIgnoreCase("GetMessages")) {
+				out.writeObject(MessageStore.instance().getDataForClient(name));
 			}
 		}
 	}
@@ -83,14 +130,24 @@ public class ConnectionThread implements Runnable, Observer
 	@Override
 	public void update(Observable o, Object arg)
 	{
-		if (arg != null) {
-			if (arg instanceof TargetedMessage) {
-				if (!this.name.equalsIgnoreCase(((TargetedMessage) arg).getReceiver())) {
+		if (arg != null)
+		{
+			if (arg instanceof TargetedMessage)
+			{
+				if (!this.name.equalsIgnoreCase(((TargetedMessage) arg).getReceiver()))
+				{
 					return;
 				}
 			}
 		}
 		
-		out.println(MessageStore.instance().getDataForClient());
+		try
+		{
+			out.writeObject(MessageStore.instance().getDataForClient(this.name));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 }

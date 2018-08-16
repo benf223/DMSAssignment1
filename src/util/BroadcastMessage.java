@@ -10,6 +10,6 @@ public class BroadcastMessage extends Message
 	@Override
 	public String toString()
 	{
-		return null;
+		return "Broadcast~" + this.sender + "~" + this.message;
 	}
 }

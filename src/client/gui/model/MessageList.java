@@ -1,28 +1,47 @@
 package client.gui.model;
 
+import util.Message;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Stack;
+
 public class MessageList
 {
 	private static MessageList instance;
 	
-	public static MessageList instance() {
-		if (instance == null) {
+	public static MessageList instance()
+	{
+		if (instance == null)
+		{
 			instance = new MessageList();
 		}
 		
 		return instance;
 	}
 	
-	private MessageList() {
+	private Stack<Message> messages;
 	
-	}
-	
-	public void set(String messages)
+	private MessageList()
 	{
-		System.out.println(messages);
+		messages = new Stack<>();
 	}
 	
-	// Data for the JPanels
-	public Object getMessages() {
-		return null;
+	public void set(Message[] messages)
+	{
+		this.messages.clear();
+		this.messages.addAll(Arrays.asList(messages));
+	}
+	
+	public String[] getMessages()
+	{
+		ArrayList<String> tmp = new ArrayList<>();
+		
+		for (Message a : messages)
+		{
+			tmp.add(a.getMessage());
+		}
+		
+		return tmp.toArray(new String[0]);
 	}
 }

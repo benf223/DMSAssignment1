@@ -1,7 +1,11 @@
 package client.gui.view;
 
 import client.gui.controller.ServerConnector;
+import client.gui.model.MessageList;
+import client.gui.model.UserList;
 import client.gui.util.AppPanel;
+import util.BroadcastMessage;
+import util.TargetedMessage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,30 +22,31 @@ public class ChatRoomWindow extends AppPanel
 	{
 		super(serverConnector, new Dimension(1000, 1200));
 		this.setLayout(new BorderLayout());
-		
 		initComponents();
 	}
 	
 	@Override
 	protected void initComponents()
 	{
-		String[] data = new String[4];
-		data[0] = "Kaylan: Hello";
-		data[1] = "David: No";
-		data[2] = "Alvin: Wut";
-		data[3] = "Ben: ...";
+		try
+		{
+			Thread.sleep(100);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
 		
-		String[] users = new String[4];
-		users[0] = "Kaylan";
-		users[1] = "David";
-		users[2] = "Alvin";
-		users[3] = "Ben";
+		this.serverConnector.thread.readUsers();
+		this.serverConnector.thread.readMessages();
 		
-		messageList = new JList<>(data);
-		this.add(messageList, BorderLayout.CENTER);
-		//serverConnector.getUsers()
-		this.usersList = new JList<>(users);
-		this.add(this.usersList, BorderLayout.EAST);
+		messageList = new JList<>(MessageList.instance().getMessages());
+		JScrollPane scrollPane = new JScrollPane(messageList);
+		this.add(scrollPane, BorderLayout.CENTER);
+		
+		this.usersList = new JList<>(UserList.instance().getUsers());
+		scrollPane = new JScrollPane(usersList);
+		this.add(scrollPane, BorderLayout.EAST);
 		
 		JPanel tmpPanel = new JPanel(new BorderLayout());
 		tmpPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -55,11 +60,27 @@ public class ChatRoomWindow extends AppPanel
 		tmpPanel.add(this.targetUser, BorderLayout.WEST);
 		
 		this.submitButton = new JButton("Send message");
+		this.submitButton.addActionListener(e -> {
+			sendMessage();
+		});
 		tmpPanel.add(this.submitButton, BorderLayout.EAST);
 		
 		this.add(tmpPanel, BorderLayout.SOUTH);
+	}
+	
+	private void sendMessage()
+	{
+		String target = this.targetUser.getText();
 		
-		//timer = new Timer(250, (event) -> System.out.println("test"));
-		//timer.start();
+		if (UserList.instance().contains(target))
+		{
+			this.serverConnector.thread.postMessage(new TargetedMessage(this.serverConnector.getUser(), this.messageArea.getText(), target));
+		}
+		else
+		{
+			this.serverConnector.thread.postMessage(new BroadcastMessage(this.serverConnector.getUser(), this.messageArea.getText()));
+		}
+		
+		messageList.setListData(MessageList.instance().getMessages());
 	}
 }

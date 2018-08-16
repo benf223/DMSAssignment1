@@ -10,13 +10,14 @@ public class TargetedMessage extends Message
 		this.receiver = receiver;
 	}
 	
-	public String getReceiver() {
+	public String getReceiver()
+	{
 		return this.receiver;
 	}
 	
 	@Override
 	public String toString()
 	{
-		return null;
+		return "Target~" + this.sender + "~" + this.receiver + "~" + this.message;
 	}
 }

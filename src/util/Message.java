@@ -13,11 +13,13 @@ public abstract class Message implements Serializable
 		this.message = message;
 	}
 	
-	public String getMessage() {
+	public String getMessage()
+	{
 		return this.message;
 	}
 	
-	public String getSender() {
+	public String getSender()
+	{
 		return this.sender;
 	}
 	

@@ -1,5 +1,6 @@
 package client.gui.view;
 
+import client.Client;
 import client.gui.controller.ServerConnector;
 import client.gui.util.AppPanel;
 
@@ -8,12 +9,12 @@ import java.awt.*;
 
 public class LoginWindow extends AppPanel
 {
-	private JLabel test = null;
-	private JLabel uNameLabel = null;
-	private JTextField uName = null;
-	private JLabel serverAddressLabel = null;
-	private JTextField serverAddress = null;
-	private JButton submitButton = null;
+	private JLabel test;
+	private JLabel uNameLabel;
+	private JTextField uName;
+	private JLabel serverAddressLabel;
+	private JTextField serverAddress;
+	private JButton submitButton;
 	
 	public LoginWindow(ServerConnector serverConnector)
 	{
@@ -36,23 +37,37 @@ public class LoginWindow extends AppPanel
 		
 		serverAddressLabel = new JLabel("Server:");
 		this.add(serverAddressLabel);
-		serverAddress = new JTextField("localhost:1291");
+		serverAddress = new JTextField("localhost");
 		this.add(serverAddress);
 		
 		this.add(new JLabel());
 		submitButton = new JButton("Login");
 		submitButton.addActionListener((event) -> {
-			this.serverConnector.connectToServer();
-			try
-			{
-				this.serverConnector.get("test");
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			loginButton();
 		});
 		
 		this.add(submitButton);
+	}
+	
+	private void loginButton()
+	{
+		this.serverConnector.connectToServer(serverAddress.getText());
+		
+		try
+		{
+			Thread.sleep(100);
+		}
+		catch (InterruptedException e)
+		{
+		}
+		
+		if (!this.serverConnector.thread.addUser(uName.getText()))
+		{
+			Client.close();
+			System.err.println("Error");
+			return;
+		}
+		
+		Client.changeView(new ChatRoomWindow(this.serverConnector));
 	}
 }

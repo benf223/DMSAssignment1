@@ -12,20 +12,26 @@ import java.awt.event.WindowEvent;
 
 public class Client
 {
-	static {
-		try {
+	static
+	{
+		try
+		{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 		}
 	}
+	
+	private static JFrame mainFrame;
 	
 	// Entry point for the client
 	public static void main(String[] args)
 	{
-		JFrame mainFrame = new JFrame("Client");
+		mainFrame = new JFrame("Client");
 		mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//		AppPanel login = new LoginWindow(ServerConnector.instance());
-		AppPanel login = new ChatRoomWindow(ServerConnector.instance());
+		AppPanel login = new LoginWindow(ServerConnector.instance());
+		//		AppPanel login = new ChatRoomWindow(ServerConnector.instance());
 		mainFrame.setContentPane(login);
 		mainFrame.setMinimumSize(login.minDimension);
 		mainFrame.setVisible(true);
@@ -34,8 +40,24 @@ public class Client
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				ServerConnector.instance().close();
+				ServerConnector.instance().thread.disconnect();
 			}
 		});
+	}
+	
+	public static void changeView(AppPanel panel)
+	{
+		mainFrame.setVisible(false);
+		mainFrame.setContentPane(panel);
+		mainFrame.setMinimumSize(panel.minDimension);
+		mainFrame.setVisible(true);
+	}
+	
+	public static void close()
+	{
+		ServerConnector.instance().thread.disconnect();
+		mainFrame.setVisible(false);
+		mainFrame.setContentPane(null);
+		System.exit(0);
 	}
 }

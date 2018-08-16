@@ -4,18 +4,19 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.ArrayList;
 
 // Convert to a GUI to better handle hangs
 public class Server
 {
 	public static final int PORT = 46587;
+	public static ArrayList<ConnectionThread> connectionThreads;
 	public static final MessageStore messageStore = MessageStore.instance();
 	
 	// Entry point for the server
 	public static void main(String[] args)
 	{
-		Scanner keyboard = new Scanner(System.in);
+		connectionThreads = new ArrayList<>();
 		
 		ServerSocket serverSocket = startServer();
 		
@@ -27,8 +28,6 @@ public class Server
 				{
 					startNewThread(serverSocket.accept());
 				}
-				
-//				serverSocket.close();
 			}
 			else
 			{
@@ -64,6 +63,7 @@ public class Server
 	private static void startNewThread(Socket socket)
 	{
 		ConnectionThread connectionThread = new ConnectionThread(socket);
+		connectionThreads.add(connectionThread);
 		messageStore.addObserver(connectionThread);
 		
 		Thread thread = new Thread(connectionThread);

@@ -2,14 +2,14 @@ package util;
 
 public class DisconnectMessage extends Message
 {
-	public DisconnectMessage(String sender, String message)
+	public DisconnectMessage(String sender)
 	{
-		super(sender, message);
+		super(sender, null);
 	}
 	
 	@Override
 	public String toString()
 	{
-		return null;
+		return "Disconnect~" + this.sender;
 	}
 }
