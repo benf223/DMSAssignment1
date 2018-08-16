@@ -5,7 +5,9 @@ import client.gui.model.MessageList;
 import client.gui.model.UserList;
 import util.*;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,7 +155,8 @@ public class ServerConnector
 			{
 				try
 				{
-					if (!active) {
+					if (!active)
+					{
 						connector.pull();
 					}
 					
@@ -175,17 +178,20 @@ public class ServerConnector
 			}
 		}
 		
-		public void started() {
+		public void started()
+		{
 			started = true;
 		}
 		
-		public void toggleActive() {
+		public void toggleActive()
+		{
 			active = !active;
 		}
 		
 		public void postMessage(Message message) throws Exception
 		{
-			if (connector.post(message).getMessage().equalsIgnoreCase("Saved")) {
+			if (connector.post(message).getMessage().equalsIgnoreCase("Saved"))
+			{
 				Client.update();
 			}
 		}

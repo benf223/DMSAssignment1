@@ -2,9 +2,7 @@ package client;
 
 import client.gui.controller.ServerConnector;
 import client.gui.util.AppPanel;
-import client.gui.view.ChatRoomWindow;
 import client.gui.view.LoginWindow;
-import server.Server;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
