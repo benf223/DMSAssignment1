@@ -113,7 +113,7 @@ public class ConnectionThread implements Runnable
 		else if (request instanceof BroadcastMessage || request instanceof TargetedMessage)
 		{
 			MessageStore.instance().push(request);
-			Thread.yield();
+			out.writeObject(new ResultMessage("Server", "Saved"));
 		}
 		else if (request instanceof DisconnectMessage)
 		{

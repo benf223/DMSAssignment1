@@ -185,8 +185,9 @@ public class ServerConnector
 		
 		public void postMessage(Message message) throws Exception
 		{
-			Message[] msgs = connector.post(message).getMessages();
-			MessageList.instance().set(msgs);
+			if (connector.post(message).getMessage().equalsIgnoreCase("Saved")) {
+				Client.update();
+			}
 		}
 		
 		public void readUsers() throws Exception
