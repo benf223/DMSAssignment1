@@ -135,17 +135,23 @@ public class ServerConnector
 		public void run()
 		{
 			connector = ServerConnector.instance();
+			
 			while (!started)
 			{
+				try
+				{
+					Thread.sleep(100);
+				}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 			}
-			
-			System.out.println("Starting up");
 			
 			while (true)
 			{
 				try
 				{
-					System.out.println("Update");
 					connector.pull();
 				}
 				catch (Exception e)
@@ -207,6 +213,7 @@ public class ServerConnector
 				return false;
 			}
 			
+			System.out.println("Here");
 			started = true;
 			return true;
 		}
