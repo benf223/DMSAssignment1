@@ -40,7 +40,13 @@ public class Client
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				ServerConnector.instance().thread.disconnect();
+				try
+				{
+					ServerConnector.instance().thread.disconnect();
+				}
+				catch (Exception e1)
+				{
+				}
 			}
 		});
 	}
@@ -55,9 +61,16 @@ public class Client
 	
 	public static void close()
 	{
-		ServerConnector.instance().thread.disconnect();
-		mainFrame.setVisible(false);
-		mainFrame.setContentPane(null);
+		try
+		{
+			ServerConnector.instance().thread.disconnect();
+			mainFrame.setVisible(false);
+			mainFrame.setContentPane(new JPanel());
+		}
+		catch (Exception e)
+		{
+		}
+		
 		System.exit(0);
 	}
 }

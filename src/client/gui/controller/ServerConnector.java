@@ -98,36 +98,21 @@ public class ServerConnector
 		return msg;
 	}
 	
-	private void close()
+	private void close() throws Exception
 	{
-		if (socket != null) {
-			try
-			{
-				post(new DisconnectMessage(user));
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+		if (socket != null)
+		{
+			post(new DisconnectMessage(user));
 		}
 	}
 	
-	private String[] getUsers()
+	private String[] getUsers() throws Exception
 	{
-		try
-		{
-			ResultMessage msg = this.get(new RequestMessage(user, "GetUsers"));
-			
-			ArrayList<String> tmp = new ArrayList<>(Arrays.asList(msg.getUsers()));
-			
-			return tmp.toArray(new String[0]);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+		ResultMessage msg = this.get(new RequestMessage(user, "GetUsers"));
 		
-		return null;
+		ArrayList<String> tmp = new ArrayList<>(Arrays.asList(msg.getUsers()));
+		
+		return tmp.toArray(new String[0]);
 	}
 	
 	public String getUser()
@@ -176,40 +161,26 @@ public class ServerConnector
 			}
 		}
 		
-		public void postMessage(Message message)
+		public void postMessage(Message message) throws Exception
 		{
-			try
-			{
-				Message[] msgs = connector.post(message).getMessages();
-				MessageList.instance().set(msgs);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			Message[] msgs = connector.post(message).getMessages();
+			MessageList.instance().set(msgs);
 		}
 		
-		public void readUsers()
+		public void readUsers() throws Exception
 		{
 			String[] users = connector.getUsers();
 			
 			connector.userList.set(users);
 		}
 		
-		public void readMessages()
+		public void readMessages() throws Exception
 		{
-			try
-			{
-				ResultMessage messages = connector.get(new RequestMessage(user, "GetMessages"));
-				connector.messageList.set(messages.getMessages());
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			ResultMessage messages = connector.get(new RequestMessage(user, "GetMessages"));
+			connector.messageList.set(messages.getMessages());
 		}
 		
-		public boolean addUser(String user)
+		public boolean addUser(String user) throws Exception
 		{
 			connector.user = user;
 			
@@ -217,7 +188,7 @@ public class ServerConnector
 			
 			if (users[0] != null)
 			{
-				if (Arrays.binarySearch(users, user) > 0)
+				if (Arrays.binarySearch(users, user) >= 0)
 				{
 					return false;
 				}
@@ -225,24 +196,18 @@ public class ServerConnector
 			
 			AddUserMessage msg = new AddUserMessage(user, "Join");
 			
-			try
+			ResultMessage result = connector.post(msg);
+			
+			if (!result.getMessage().equalsIgnoreCase("Accept"))
 			{
-				ResultMessage result = connector.post(msg);
-				
-				if (result.getMessage().equalsIgnoreCase("Accept"))
-				{
-				}
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
+				return false;
 			}
 			
 			started = true;
 			return true;
 		}
 		
-		public void disconnect()
+		public void disconnect() throws Exception
 		{
 			connector.close();
 		}

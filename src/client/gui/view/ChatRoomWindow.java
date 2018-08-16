@@ -37,8 +37,15 @@ public class ChatRoomWindow extends AppPanel
 			e.printStackTrace();
 		}
 		
-		this.serverConnector.thread.readUsers();
-		this.serverConnector.thread.readMessages();
+		try
+		{
+			this.serverConnector.thread.readUsers();
+			this.serverConnector.thread.readMessages();
+		}
+		catch (Exception e)
+		{
+		
+		}
 		
 		messageList = new JList<>(MessageList.instance().getMessages());
 		JScrollPane scrollPane = new JScrollPane(messageList);
@@ -61,14 +68,20 @@ public class ChatRoomWindow extends AppPanel
 		
 		this.submitButton = new JButton("Send message");
 		this.submitButton.addActionListener(e -> {
-			sendMessage();
+			try
+			{
+				sendMessage();
+			}
+			catch (Exception e1)
+			{
+			}
 		});
 		tmpPanel.add(this.submitButton, BorderLayout.EAST);
 		
 		this.add(tmpPanel, BorderLayout.SOUTH);
 	}
 	
-	private void sendMessage()
+	private void sendMessage() throws Exception
 	{
 		String target = this.targetUser.getText();
 		

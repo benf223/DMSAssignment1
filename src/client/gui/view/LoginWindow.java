@@ -61,11 +61,18 @@ public class LoginWindow extends AppPanel
 		{
 		}
 		
-		if (!this.serverConnector.thread.addUser(uName.getText()))
+		try
 		{
-			Client.close();
-			System.err.println("Error");
-			return;
+			if (!this.serverConnector.thread.addUser(uName.getText()))
+			{
+				Client.close();
+				System.err.println("Error");
+				return;
+			}
+		}
+		catch (Exception e)
+		{
+		
 		}
 		
 		Client.changeView(new ChatRoomWindow(this.serverConnector));

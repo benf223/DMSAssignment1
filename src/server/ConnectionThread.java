@@ -91,7 +91,22 @@ public class ConnectionThread implements Runnable, Observer
 			try
 			{
 				this.name = request.getSender();
-				out.writeObject(new ResultMessage("Server", "Accept"));
+				
+				ArrayList<String> users = new ArrayList<>();
+				for (ConnectionThread a : Server.connectionThreads)
+				{
+					users.add(a.name);
+				}
+				System.out.println(users);
+				
+				if (users.contains(this.name))
+				{
+					out.writeObject(new ResultMessage("Server", "Accept"));
+				}
+				else
+				{
+					out.writeObject(new ResultMessage("Server", "Reject"));
+				}
 			}
 			catch (IOException e)
 			{
@@ -121,7 +136,9 @@ public class ConnectionThread implements Runnable, Observer
 				
 				result.setUsers(users.toArray(new String[0]));
 				out.writeObject(result);
-			} else if (request.getMessage().equalsIgnoreCase("GetMessages")) {
+			}
+			else if (request.getMessage().equalsIgnoreCase("GetMessages"))
+			{
 				out.writeObject(MessageStore.instance().getDataForClient(name));
 			}
 		}
