@@ -4,11 +4,14 @@ import client.gui.controller.ServerConnector;
 import client.gui.model.MessageList;
 import client.gui.model.UserList;
 import client.gui.util.AppPanel;
+import javafx.scene.input.KeyCode;
 import util.BroadcastMessage;
 import util.TargetedMessage;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class ChatRoomWindow extends AppPanel
 {

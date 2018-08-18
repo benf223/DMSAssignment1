@@ -109,13 +109,13 @@ public class ServerConnector
 		}
 	}
 	
-	private String[] getUsers() throws Exception
+	private ArrayList<String> getUsers() throws Exception
 	{
 		ResultMessage msg = this.get(new RequestMessage(user, "GetUsers"));
 		
 		ArrayList<String> tmp = new ArrayList<>(Arrays.asList(msg.getUsers()));
 		
-		return tmp.toArray(new String[0]);
+		return tmp;
 	}
 	
 	public String getUser()
@@ -163,7 +163,6 @@ public class ServerConnector
 				}
 				catch (Exception e)
 				{
-					e.printStackTrace();
 					System.exit(-1);
 				}
 				
@@ -173,7 +172,6 @@ public class ServerConnector
 				}
 				catch (InterruptedException e)
 				{
-					e.printStackTrace();
 				}
 			}
 		}
@@ -198,7 +196,7 @@ public class ServerConnector
 		
 		public void readUsers() throws Exception
 		{
-			String[] users = connector.getUsers();
+			ArrayList<String> users = connector.getUsers();
 			
 			connector.userList.set(users);
 		}
@@ -213,11 +211,11 @@ public class ServerConnector
 		{
 			connector.user = user;
 			
-			String[] users = connector.getUsers();
+			ArrayList<String> users = connector.getUsers();
 			
-			if (users[0] != null)
+			if (users.get(0) != null)
 			{
-				if (Arrays.binarySearch(users, user) >= 0)
+				if (users.contains(user))
 				{
 					return false;
 				}

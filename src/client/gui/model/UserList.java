@@ -25,10 +25,10 @@ public class UserList
 		userList = new ArrayList<>();
 	}
 	
-	public void set(String[] users)
+	public void set(ArrayList<String> users)
 	{
 		userList.clear();
-		userList.addAll(Arrays.asList(users));
+		userList.addAll(users);
 	}
 	
 	// Data for the JPanels

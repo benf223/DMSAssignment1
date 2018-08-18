@@ -85,11 +85,11 @@ public class ConnectionThread implements Runnable
 				this.name = request.getSender();
 				
 				ArrayList<String> users = new ArrayList<>();
+				
 				for (ConnectionThread a : Server.connectionThreads)
 				{
 					users.add(a.name);
 				}
-				System.out.println(users);
 				
 				if (users.contains(this.name))
 				{
@@ -121,6 +121,7 @@ public class ConnectionThread implements Runnable
 				ResultMessage result = new ResultMessage("Server", "Users");
 				
 				ArrayList<String> users = new ArrayList<>();
+				
 				for (ConnectionThread a : Server.connectionThreads)
 				{
 					users.add(a.name);

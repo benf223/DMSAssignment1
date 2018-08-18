@@ -79,4 +79,9 @@ public class Client
 		currentPanel.updateElements();
 		mainFrame.repaint();
 	}
+	
+	public static void setName(String text)
+	{
+		mainFrame.setTitle("Chatroom: " + text);
+	}
 }

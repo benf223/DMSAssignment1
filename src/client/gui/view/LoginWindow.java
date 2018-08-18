@@ -81,6 +81,8 @@ public class LoginWindow extends AppPanel
 		
 		}
 		
+		Client.setName(uName.getText());
+		
 		Client.changeView(new ChatRoomWindow(this.serverConnector));
 	}
 }
