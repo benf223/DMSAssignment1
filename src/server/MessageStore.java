@@ -27,7 +27,7 @@ public class MessageStore
 	private MessageStore()
 	{
 		messageStack = new Stack<>();
-		messageStack.push(new BroadcastMessage("Server", "Welcome to the jungle"));
+		messageStack.push(new BroadcastMessage("Server", "Welcome to the chatroom"));
 	}
 	
 	public synchronized void push(Message message)

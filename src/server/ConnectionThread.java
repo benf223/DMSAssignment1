@@ -94,6 +94,7 @@ public class ConnectionThread implements Runnable
 				if (users.contains(this.name))
 				{
 					out.writeObject(new ResultMessage("Server", "Accept"));
+					MessageStore.instance().push(new BroadcastMessage("Server", name + " has connected."));
 				}
 				else
 				{
@@ -112,6 +113,11 @@ public class ConnectionThread implements Runnable
 		}
 		else if (request instanceof DisconnectMessage)
 		{
+			if (name != null)
+			{
+				MessageStore.instance().push(new BroadcastMessage("Server", name + " has disconnected."));
+			}
+			
 			stopRequested = true;
 		}
 		else if (request instanceof RequestMessage)
